@@ -1,0 +1,24 @@
+.block {
+  border: 1px solid var(--grey-color);
+  width: 68px;
+  height: 68px;
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 4px;
+  cursor: pointer;
+  box-shadow: var(--shadow-bg-color) 0px 8px 24px;
+} 
+
+.block .itemsWrapper {
+  height: 100%;
+}
+
+.block .item {
+  background-color: var(--primary-color);
+  height: 100%;
+  border-radius: 4px;
+}
+
+.block:hover .item {
+  opacity: .7;
+}

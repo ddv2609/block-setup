@@ -1,0 +1,15 @@
+.home {
+  padding: 24px;
+}
+
+.blocks {
+  margin-top: 24px;
+}
+
+.home .inputBlocks {
+  min-width: 236px;
+}
+
+.home .saveBtn {
+  margin-top: 12px;
+}
