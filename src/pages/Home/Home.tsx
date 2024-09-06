@@ -12,6 +12,14 @@ import { useState } from "react";
 import Block from "../../components/Block/Block";
 import { itemsDropdown } from "../../constants";
 import { useNavigate } from "react-router-dom";
+import useMessage from "antd/es/message/useMessage";
+
+interface Setup {
+  key: string,
+  block: number,
+  splits: number[],
+  created: string,
+}
 
 function Home() {
   const [blocks, setBlocks] = useState<number[]>( 
@@ -21,6 +29,8 @@ function Home() {
   );
 
   const nav = useNavigate();
+
+  const [messageApi, contextHolder] = useMessage();
 
   const handleChangeBlockNumber: InputNumberProps["onChange"] = (amount) => {
     setBlocks(amount ? (Array(amount).fill(1) as number[]) : []);
@@ -34,6 +44,21 @@ function Home() {
 
   const handleSaveSetup: React.MouseEventHandler<HTMLElement> = () => {
     localStorage.setItem("currentSetup", JSON.stringify(blocks));
+
+    const newListSetups: Setup[] = JSON.parse(localStorage.getItem("setups") || "[]");
+    const id = blocks.join("");
+    let hadSetup = newListSetups.some((setup) => setup.key === id);
+    if (!hadSetup) {
+      newListSetups.unshift({
+        key: id,
+        block: blocks.length,
+        splits: blocks,
+        created: new Date().toISOString(),
+      });
+      localStorage.setItem("setups", JSON.stringify(newListSetups));
+      messageApi.success("Save setup successfully");
+    } else 
+      messageApi.warning("Setup already exists");
   };
 
   const handleNavToHistories: React.MouseEventHandler<HTMLElement> = () => {
@@ -42,6 +67,7 @@ function Home() {
 
   return (
     <div className={styles.home}>
+      { contextHolder }
       <InputNumber
         min={0}
         placeholder="Enter the block number"
