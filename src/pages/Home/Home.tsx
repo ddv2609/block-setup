@@ -4,6 +4,8 @@ import {
   Dropdown,
   InputNumber,
   InputNumberProps,
+  Pagination,
+  PaginationProps,
   Row,
   Space,
 } from "antd";
@@ -15,18 +17,23 @@ import { useNavigate } from "react-router-dom";
 import useMessage from "antd/es/message/useMessage";
 
 interface Setup {
-  key: string,
-  block: number,
-  splits: number[],
-  created: string,
+  key: string;
+  block: number;
+  splits: number[];
+  created: string;
 }
 
 function Home() {
-  const [blocks, setBlocks] = useState<number[]>( 
-    localStorage.getItem("currentSetup") 
-    ? JSON.parse(localStorage.getItem("currentSetup") || "[]")
-    : []
+  const [blocks, setBlocks] = useState<number[]>(
+    localStorage.getItem("currentSetup")
+      ? JSON.parse(localStorage.getItem("currentSetup") || "[]")
+      : []
   );
+
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 10,
+  });
 
   const nav = useNavigate();
 
@@ -45,7 +52,9 @@ function Home() {
   const handleSaveSetup: React.MouseEventHandler<HTMLElement> = () => {
     localStorage.setItem("currentSetup", JSON.stringify(blocks));
 
-    const newListSetups: Setup[] = JSON.parse(localStorage.getItem("setups") || "[]");
+    const newListSetups: Setup[] = JSON.parse(
+      localStorage.getItem("setups") || "[]"
+    );
     const id = blocks.join("");
     let hadSetup = newListSetups.some((setup) => setup.key === id);
     if (!hadSetup) {
@@ -57,17 +66,26 @@ function Home() {
       });
       localStorage.setItem("setups", JSON.stringify(newListSetups));
       messageApi.success("Save setup successfully");
-    } else 
-      messageApi.warning("Setup already exists");
+    } else messageApi.warning("Setup already exists");
   };
 
   const handleNavToHistories: React.MouseEventHandler<HTMLElement> = () => {
     nav("/setup-history");
-  }
+  };
+
+  const handleChangePage: PaginationProps["onChange"] = (
+    page: number,
+    pageSize: number
+  ) => {
+    setPagination({
+      page,
+      pageSize,
+    });
+  };
 
   return (
     <div className={styles.home}>
-      { contextHolder }
+      {contextHolder}
       <InputNumber
         min={0}
         placeholder="Enter the block number"
@@ -78,31 +96,51 @@ function Home() {
 
       <div className={styles.saveBtn}>
         <Space size="large">
-          <Button type="primary" 
-            onClick={handleSaveSetup} 
-            disabled={blocks.length ? false : true}>Save</Button>
-          <Button type="primary" onClick={handleNavToHistories}>Apply setup history</Button>
+          <Button
+            type="primary"
+            onClick={handleSaveSetup}
+            disabled={blocks.length ? false : true}
+          >
+            Save
+          </Button>
+          <Button type="primary" onClick={handleNavToHistories}>
+            Apply setup history
+          </Button>
         </Space>
       </div>
 
       <div className={styles.blocks}>
         <Row justify="start" gutter={[24, 24]}>
-          {blocks.map((split, index) => (
-            <Col key={index}>
-              <Dropdown
-                menu={{
-                  items: itemsDropdown,
-                  onClick: (props) => handleSplitBlock(index, props),
-                }}
-                trigger={["click"]}
-              >
-                <div>
-                  <Block split={split} />
-                </div>
-              </Dropdown>
-            </Col>
-          ))}
+          {blocks
+            .slice(
+              (pagination.page - 1) * pagination.pageSize,
+              pagination.page * pagination.pageSize - 1
+            )
+            .map((split, index) => (
+              <Col key={index}>
+                <Dropdown
+                  menu={{
+                    items: itemsDropdown,
+                    onClick: (props) => handleSplitBlock(index + (pagination.page - 1) * pagination.pageSize, props),
+                  }}
+                  trigger={["click"]}
+                >
+                  <div>
+                    <Block split={split} />
+                  </div>
+                </Dropdown>
+              </Col>
+            ))}
         </Row>
+        <div className={styles.pagination}>
+          <Pagination
+            align="end"
+            defaultCurrent={pagination.page}
+            pageSize={pagination.pageSize}
+            total={blocks.length}
+            onChange={handleChangePage}
+          />
+        </div>
       </div>
     </div>
   );
