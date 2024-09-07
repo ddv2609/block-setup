@@ -41,6 +41,10 @@ function Home() {
 
   const handleChangeBlockNumber: InputNumberProps["onChange"] = (amount) => {
     setBlocks(amount ? (Array(amount).fill(1) as number[]) : []);
+    setPagination({
+      page: 1,
+      pageSize: 10,
+    });
   };
 
   const handleSplitBlock = (block: number, { key }: any) => {
@@ -121,7 +125,11 @@ function Home() {
                 <Dropdown
                   menu={{
                     items: itemsDropdown,
-                    onClick: (props) => handleSplitBlock(index + (pagination.page - 1) * pagination.pageSize, props),
+                    onClick: (props) =>
+                      handleSplitBlock(
+                        index + (pagination.page - 1) * pagination.pageSize,
+                        props
+                      ),
                   }}
                   trigger={["click"]}
                 >
@@ -132,15 +140,18 @@ function Home() {
               </Col>
             ))}
         </Row>
-        <div className={styles.pagination}>
-          <Pagination
-            align="end"
-            defaultCurrent={pagination.page}
-            pageSize={pagination.pageSize}
-            total={blocks.length}
-            onChange={handleChangePage}
-          />
-        </div>
+        {blocks.length > 0 && (
+          <div className={styles.pagination}>
+            <Pagination
+              align="end"
+              defaultCurrent={pagination.page}
+              current={pagination.page}
+              pageSize={pagination.pageSize}
+              total={blocks.length}
+              onChange={handleChangePage}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
