@@ -96,7 +96,7 @@ function Home() {
       {contextHolder}
       <InputNumber
         min={0}
-        max={10000000}
+        max={500000}
         placeholder="Enter the block number"
         defaultValue={blocks.length}
         onChange={handleChangeBlockNumber}
