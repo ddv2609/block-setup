@@ -84,7 +84,7 @@ function History() {
 
   return (
     <div className={styles.history}>
-      <Button onClick={() => nav("/")}>Back</Button>
+      <Button type="primary" onClick={() => nav("/")}>Back</Button>
       <Table
         columns={columns}
         dataSource={JSON.parse(localStorage.getItem("setups") || "[]")}
