@@ -40,9 +40,7 @@ function Home() {
   const [messageApi, contextHolder] = useMessage();
 
   const handleChangeBlockNumber: InputNumberProps["onChange"] = (amount) => {
-    // console.log(`Length: ${amount}`);
     setBlocks(amount ? (Array(amount).fill(1) as number[]) : []); // Problem performane here
-    // console.log("oke");
     setPagination({
       page: 1,
       pageSize: 10,
@@ -89,14 +87,11 @@ function Home() {
     });
   };
 
-  // console.log(blocks.length);
-
   return (
     <div className={styles.home}>
       {contextHolder}
       <InputNumber
         min={0}
-        max={500000}
         placeholder="Enter the block number"
         defaultValue={blocks.length}
         onChange={handleChangeBlockNumber}
